@@ -1,68 +1,57 @@
 package com.abezard.sudokuHelper.controller;
 
+import com.abezard.sudokuHelper.model.SudokuBoard;
+import com.abezard.sudokuHelper.service.SudokuGeneratorService;
+import com.abezard.sudokuHelper.view.SudokuGridView;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
+@Component
 public class SudokuController implements Initializable {
 
+    @Autowired
+    private SudokuGeneratorService sudokuGenerator;
+
+    private SudokuGridView sudokuGridView;
+
     @FXML
-    public Button newEasyButton;
-    @FXML
-    public Button newHardButton;
-    @FXML
-    private GridPane sudokuGrid;
+    private GridPane sudokuGrid;  // This is a placeholder container in FXML
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        sudokuGrid.getColumnConstraints().clear();
-        sudokuGrid.getRowConstraints().clear();
+        sudokuGridView = new SudokuGridView();
         sudokuGrid.getChildren().clear();
-        sudokuGrid.getStyleClass().add("sudoku-grid");
+        sudokuGrid.add(sudokuGridView, 0, 0);
+        GridPane.setHgrow(sudokuGridView, Priority.ALWAYS);
+        GridPane.setVgrow(sudokuGridView, Priority.ALWAYS);
 
-        for (int i = 0; i < 9; i++) {
-            ColumnConstraints col = new ColumnConstraints();
-            col.setPercentWidth(100.0 / 9);
-            col.setHgrow(Priority.ALWAYS);
-            sudokuGrid.getColumnConstraints().add(col);
+        // Instead of loading a puzzle, clear and disable grid on startup
+        sudokuGridView.clearAndDisableGrid();
+    }
 
-            RowConstraints row = new RowConstraints();
-            row.setPercentHeight(100.0 / 9);
-            row.setVgrow(Priority.ALWAYS);
-            sudokuGrid.getRowConstraints().add(row);
-        }
 
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                TextField tf = new TextField();
-                tf.getStyleClass().add("text-field");
-                tf.getStyleClass().add("no-border");
-                tf.setAlignment(Pos.CENTER);
-                tf.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                tf.setPrefSize(50, 50);
+    private void loadNewPuzzle(SudokuBoard board) {
+        sudokuGridView.enableGrid();
+        sudokuGridView.updateFromModel(board);
+    }
 
-                if(row == 2 || row == 5) tf.getStyleClass().add("top-row");
-                if(row == 3 || row == 6) tf.getStyleClass().add("bottom-row");
+    @FXML
+    public void onNewEasyClicked(ActionEvent actionEvent) {
+        System.out.println("New Easy Sudoku Puzzle Clicked");
+        SudokuBoard newBoard = sudokuGenerator.generateEasySudoku();
+        loadNewPuzzle(newBoard);
+    }
 
-                if(col == 2 || col == 5) tf.getStyleClass().add("left-col");
-                if(col == 3 || col == 6) tf.getStyleClass().add("right-col");
-
-                // Allow only 1-9 digits
-                tf.textProperty().addListener((obs, oldVal, newVal) -> {
-                    if (!newVal.matches("[1-9]?")) {
-                        tf.setText(oldVal);
-                    }
-                });
-
-                sudokuGrid.add(tf, col, row);
-            }
-        }
+    @FXML
+    public void onNewHardClicked(ActionEvent actionEvent) {
+        System.out.println("New Hard Sudoku Puzzle Clicked");
+        SudokuBoard newBoard = sudokuGenerator.generateHardSudoku();
+        loadNewPuzzle(newBoard);
     }
 }
