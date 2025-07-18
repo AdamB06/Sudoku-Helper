@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SudokuHelper {
+public class SudokuHelperApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SudokuHelper.class, args);
+		SpringApplication.run(SudokuHelperApplication.class, args);
 	}
 
 }

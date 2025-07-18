@@ -1,0 +1,62 @@
+.sudoku-grid {
+    -fx-border-color: black;
+    -fx-border-width: 5px; /* thick outside border */
+}
+
+.text-field {
+    -fx-font-size: 20px;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1px;
+    -fx-background-color: white;
+    -fx-alignment: center;
+}
+
+.top-row {
+    -fx-border-width: 1px 1px 2px 1px;
+    -fx-border-color: lightgrey lightgrey darkgrey lightgrey;
+}
+
+.bottom-row {
+    -fx-border-width: 2px 1px 1px 1px;
+    -fx-border-color: darkgrey lightgrey lightgrey lightgrey;
+
+}
+
+.left-col {
+    -fx-border-width: 1px 2px 1px 1px;
+    -fx-border-color: lightgrey darkgrey lightgrey lightgrey;
+}
+
+.right-col {
+    -fx-border-width: 1px 1px 1px 2px;
+    -fx-border-color: lightgrey lightgrey lightgrey darkgrey;
+}
+
+/* Combine top-row and left-col for top-left cell */
+.top-row.left-col {
+    -fx-border-width: 1px 2px 2px 1px;
+    -fx-border-color: lightgrey darkgrey darkgrey lightgrey;
+}
+
+/* Combine top-row and right-col for top-right cell */
+.top-row.right-col {
+    -fx-border-width: 1px 1px 2px 2px;
+    -fx-border-color: lightgrey lightgrey darkgrey darkgrey;
+}
+
+/* Combine bottom-row and left-col for bottom-left cell */
+.bottom-row.left-col {
+    -fx-border-width: 2px 2px 1px 1px;
+    -fx-border-color: darkgrey darkgrey lightgrey lightgrey;
+}
+
+/* Combine bottom-row and right-col for bottom-right cell */
+.bottom-row.right-col {
+    -fx-border-width: 2px 1px 1px 2px;
+    -fx-border-color: darkgrey lightgrey lightgrey darkgrey;
+}
+
+/* Highlighting for selected cell */
+.text-field:focused {
+    -fx-background-color: rgba(255, 213, 128, 0.4);;
+}
