@@ -19,6 +19,19 @@ public class SudokuBoard {
         }
     }
 
+    public int getCell(int row, int col) {
+        return board[row][col];
+    }
+
+    public void setCell(int row, int col, int value) {
+        board[row][col] = value;
+    }
+
+    public boolean isEmpty(int row, int col) {
+        return board[row][col] == 0;
+    }
+
+
     public void reset() {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
