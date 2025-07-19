@@ -1,13 +1,13 @@
 package com.abezard.sudokuHelper.controller;
 
 import com.abezard.sudokuHelper.model.SudokuBoard;
-import com.abezard.sudokuHelper.service.SudokuGeneratorService;
+import com.abezard.sudokuHelper.service.FullBoardGeneratingService;
+import com.abezard.sudokuHelper.service.SudokuGeneratingService;
 import com.abezard.sudokuHelper.view.SudokuGridView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -15,17 +15,16 @@ import java.util.ResourceBundle;
 @Component
 public class SudokuController implements Initializable {
 
-    @Autowired
-    private SudokuGeneratorService sudokuGenerator;
+    private FullBoardGeneratingService boardGenerator;
 
     private SudokuGridView sudokuGridView;
 
     @FXML
-    private GridPane sudokuGrid;  // This is a placeholder container in FXML
+    private GridPane sudokuGrid;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        sudokuGenerator = new SudokuGeneratorService();
+        boardGenerator = new FullBoardGeneratingService();
         sudokuGridView = new SudokuGridView();
         sudokuGrid.getChildren().clear();
         sudokuGrid.add(sudokuGridView, 0, 0);
@@ -45,14 +44,16 @@ public class SudokuController implements Initializable {
     @FXML
     public void onNewEasyClicked(ActionEvent actionEvent) {
         System.out.println("New Easy Sudoku Puzzle Clicked");
-        SudokuBoard newBoard = sudokuGenerator.generateFullBoard();
+        SudokuGeneratingService sudokuGenerator = new SudokuGeneratingService(boardGenerator);
+        SudokuBoard newBoard = sudokuGenerator.generatePuzzle("easy");
         loadNewPuzzle(newBoard);
     }
 
     @FXML
     public void onNewHardClicked(ActionEvent actionEvent) {
         System.out.println("New Hard Sudoku Puzzle Clicked");
-        SudokuBoard newBoard = sudokuGenerator.generateFullBoard();
+        SudokuGeneratingService sudokuGenerator = new SudokuGeneratingService(boardGenerator);
+        SudokuBoard newBoard = sudokuGenerator.generatePuzzle("hard");
         loadNewPuzzle(newBoard);
     }
 }
