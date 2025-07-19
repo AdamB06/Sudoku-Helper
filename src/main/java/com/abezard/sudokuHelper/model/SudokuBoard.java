@@ -7,6 +7,13 @@ public class SudokuBoard {
         this.board = new int[9][9];
     }
 
+    public SudokuBoard(SudokuBoard fullBoard) {
+        this.board = new int[9][9];
+        for (int i = 0; i < 9; i++) {
+            System.arraycopy(fullBoard.board[i], 0, this.board[i], 0, 9);
+        }
+    }
+
     public int[][] getBoard() {
         return board;
     }
@@ -30,7 +37,6 @@ public class SudokuBoard {
     public boolean isEmpty(int row, int col) {
         return board[row][col] == 0;
     }
-
 
     public void reset() {
         for (int i = 0; i < 9; i++) {

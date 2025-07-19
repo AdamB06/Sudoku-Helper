@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 @Component
-public class SudokuGeneratorService {
+public class FullBoardGeneratingService {
 
     private final Random random = new Random();
 
@@ -58,7 +58,7 @@ public class SudokuGeneratorService {
         return false;
     }
 
-    private boolean isValidPlacement(SudokuBoard board, int row, int col, int num) {
+    boolean isValidPlacement(SudokuBoard board, int row, int col, int num) {
         // Check row and column
         for (int i = 0; i < 9; i++) {
             if (board.getCell(row, i) == num || board.getCell(i, col) == num) {
