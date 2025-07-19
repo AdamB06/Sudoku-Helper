@@ -27,8 +27,8 @@
             <Button text="Get Hint"/>
             <Button text="Submit"/>
             <Button text="Solution"/>
-            <Button text="New Easy Sudoku" fx:id="newEasyButton"/>
-            <Button text="New Hard Sudoku" fx:id="newHardButton"/>
+            <Button text="New Easy Sudoku" fx:id="newEasyButton" onAction="#onNewEasyClicked"/>
+            <Button text="New Hard Sudoku" fx:id="newHardButton" onAction="#onNewHardClicked"/>
         </HBox>
     </children>
 </VBox>
