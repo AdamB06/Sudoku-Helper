@@ -2,6 +2,7 @@ package com.abezard.sudokuHelper.view;
 
 import com.abezard.sudokuHelper.model.SudokuBoard;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -63,13 +64,24 @@ public class SudokuGridView extends GridPane {
     }
 
     public void updateFromModel(SudokuBoard board) {
-        int[][] values = board.getBoard();
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                int val = values[row][col];
-                cells[row][col].setText(val == 0 ? "" : String.valueOf(val));
-                // Optionally disable editing for preset clues (if you add that logic)
-                // cells[row][col].setDisable(...);
+        for (Node node : this.getChildren()) {
+            if (node instanceof TextField tf) {
+                Integer row = GridPane.getRowIndex(tf);
+                Integer col = GridPane.getColumnIndex(tf);
+                row = row == null ? 0 : row;
+                col = col == null ? 0 : col;
+                int value = board.getCell(row, col);
+//                tf.getStyleClass().remove("clue");
+                if (value == 0) {
+                    tf.setText("");
+                    tf.setDisable(false);
+                    //editable -> visual cue
+                } else {
+                    tf.setText(String.valueOf(value));
+                    tf.setDisable(true);
+//                    tf.getStyleClass().add("clue");
+                    //not editable -> visual cue
+                }
             }
         }
     }

@@ -25,6 +25,7 @@ public class SudokuController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        sudokuGenerator = new SudokuGeneratorService();
         sudokuGridView = new SudokuGridView();
         sudokuGrid.getChildren().clear();
         sudokuGrid.add(sudokuGridView, 0, 0);
@@ -44,14 +45,14 @@ public class SudokuController implements Initializable {
     @FXML
     public void onNewEasyClicked(ActionEvent actionEvent) {
         System.out.println("New Easy Sudoku Puzzle Clicked");
-        SudokuBoard newBoard = sudokuGenerator.generateEasySudoku();
+        SudokuBoard newBoard = sudokuGenerator.generateFullBoard();
         loadNewPuzzle(newBoard);
     }
 
     @FXML
     public void onNewHardClicked(ActionEvent actionEvent) {
         System.out.println("New Hard Sudoku Puzzle Clicked");
-        SudokuBoard newBoard = sudokuGenerator.generateHardSudoku();
+        SudokuBoard newBoard = sudokuGenerator.generateFullBoard();
         loadNewPuzzle(newBoard);
     }
 }
