@@ -25,8 +25,8 @@
 
         <HBox alignment="CENTER" spacing="10">
             <Button text="Get Hint"/>
-            <Button text="Submit"/>
-            <Button text="Solution"/>
+            <Button text="Submit" onAction="#onSubmitClicked"/>
+            <Button text="Solution" onAction="#onRevealSolution"/>
             <Button text="New Easy Sudoku" fx:id="newEasyButton" onAction="#onNewEasyClicked"/>
             <Button text="New Hard Sudoku" fx:id="newHardButton" onAction="#onNewHardClicked"/>
         </HBox>

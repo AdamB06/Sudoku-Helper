@@ -3,6 +3,7 @@ package com.abezard.sudokuHelper.view;
 import com.abezard.sudokuHelper.model.SudokuBoard;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -71,16 +72,12 @@ public class SudokuGridView extends GridPane {
                 row = row == null ? 0 : row;
                 col = col == null ? 0 : col;
                 int value = board.getCell(row, col);
-//                tf.getStyleClass().remove("clue");
                 if (value == 0) {
                     tf.setText("");
                     tf.setDisable(false);
-                    //editable -> visual cue
                 } else {
                     tf.setText(String.valueOf(value));
                     tf.setDisable(true);
-//                    tf.getStyleClass().add("clue");
-                    //not editable -> visual cue
                 }
             }
         }
@@ -91,9 +88,8 @@ public class SudokuGridView extends GridPane {
             for (int col = 0; col < 9; col++) {
                 TextField cell = cells[row][col];
                 cell.setText("");
-                cell.setDisable(true);  // disable input and interaction
-                // Optionally, if you want it grayed out visually:
-                cell.setStyle("-fx-opacity: 0.6; -fx-background-color: #e0e0e0;"); // more visible feedback for disabled
+                cell.setDisable(true);
+                cell.setStyle("-fx-opacity: 0.6; -fx-background-color: #e0e0e0;");
             }
         }
     }
@@ -119,5 +115,41 @@ public class SudokuGridView extends GridPane {
         }
         board.setBoard(values);
         return board;
+    }
+
+    public void checkSolution(SudokuBoard sudokuBoard) {
+        boolean allCorrect = true;
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                TextField cell = cells[row][col];
+                int value = sudokuBoard.getCell(row, col);
+                if (value == -1) {
+                    cell.setStyle("-fx-background-color: #f8d7da;"); // Incorrect value
+                    allCorrect = false;
+                } else {
+                    cell.setStyle("-fx-background-color: #d4edda;"); // Correct value
+                }
+            }
+        }
+
+        if (allCorrect) {
+            javafx.scene.control.Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Sudoku");
+            alert.setHeaderText(null);
+            alert.setContentText("Congratulations! Your solution is correct!");
+            alert.showAndWait();
+        }
+    }
+
+    public void revealSolution(SudokuBoard solution) {
+        if(solution == null){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Sudoku");
+            alert.setHeaderText(null);
+            alert.setContentText("No solution available to reveal.");
+            alert.showAndWait();
+            return;
+        }
+        updateFromModel(solution);
     }
 }

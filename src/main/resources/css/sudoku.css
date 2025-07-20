@@ -60,3 +60,9 @@
 .text-field:focused {
     -fx-background-color: rgba(255, 213, 128, 0.4);;
 }
+
+.text-field:disabled {
+    -fx-opacity: 1;
+    -fx-background-color: #e0e7ff;
+    -fx-text-fill: black;
+}
