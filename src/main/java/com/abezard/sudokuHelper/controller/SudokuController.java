@@ -119,7 +119,7 @@ public class SudokuController implements Initializable {
      * @param message The message to display in the dialog.
      */
     private void showInfoDialog(String message) {
-        Alert alert = new Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
         alert.setContentText(message);

@@ -37,4 +37,8 @@ public class SudokuBoard {
     public void setCell(int row, int col, int value) {
         board[row][col] = value;
     }
+
+    public int[][] getBoard() {
+        return board;
+    }
 }

@@ -66,7 +66,7 @@ public class SudokuGeneratingService {
      * @param board The SudokuBoard to check for solutions.
      * @return The number of valid solutions for the given board.
      */
-    private int countSolutions(SudokuBoard board) {
+    public int countSolutions(SudokuBoard board) {
         return countSolutionsHelper(board, 0);
     }
 
