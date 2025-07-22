@@ -13,12 +13,21 @@ public class FullBoardGeneratingService {
 
     private final Random random = new Random();
 
+    /**
+     * Generates a full Sudoku board with all cells filled.
+     * @return The filled SudokuBoard.
+     */
     public SudokuBoard generateFullBoard() {
         SudokuBoard board = new SudokuBoard();
         fillBoard(board);
         return board;
     }
 
+    /**
+     * Fills the Sudoku board using a backtracking algorithm, and the minimum remaining values heuristic.
+     * @param board The SudokuBoard to fill.
+     * @return true if the board is successfully filled, false otherwise.
+     */
    private boolean fillBoard(SudokuBoard board) {
         int minOptions = 10;
         int targetRow = -1, targetCol = -1;
@@ -58,6 +67,14 @@ public class FullBoardGeneratingService {
         return false;
     }
 
+    /**
+     * Checks if placing a number in the specified cell is valid according to Sudoku rules.
+     * @param board The SudokuBoard to check.
+     * @param row The row index of the cell.
+     * @param col The column index of the cell.
+     * @param num The number to place in the cell.
+     * @return true if the placement is valid, false otherwise.
+     */
     boolean isValidPlacement(SudokuBoard board, int row, int col, int num) {
         // Check row and column
         for (int i = 0; i < 9; i++) {

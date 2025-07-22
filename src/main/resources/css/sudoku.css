@@ -66,3 +66,7 @@
     -fx-background-color: #e0e7ff;
     -fx-text-fill: black;
 }
+
+.hint-cell {
+    -fx-background-color: #fff3cd;
+}

@@ -1,23 +1,34 @@
 package com.abezard.sudokuHelper.view;
 
+import com.abezard.sudokuHelper.model.Hint;
 import com.abezard.sudokuHelper.model.SudokuBoard;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 
+import java.util.Optional;
+
 public class SudokuGridView extends GridPane {
 
     private final TextField[][] cells = new TextField[9][9];
 
+    /**
+     * Constructor for SudokuGridView.
+     * Initializes the grid layout and sets up the text fields for Sudoku cells.
+     */
     public SudokuGridView() {
         buildGrid();
     }
 
+    /**
+     * Rebuilds the grid layout and initializes the text fields.
+     */
     private void buildGrid() {
         getColumnConstraints().clear();
         getRowConstraints().clear();
@@ -64,6 +75,11 @@ public class SudokuGridView extends GridPane {
         }
     }
 
+    /**
+     * Updates the grid view from the provided SudokuBoard model.
+     * Clears existing text fields and populates them with values from the board.
+     * @param board The SudokuBoard model to update the view from.
+     */
     public void updateFromModel(SudokuBoard board) {
         for (Node node : this.getChildren()) {
             if (node instanceof TextField tf) {
@@ -79,10 +95,14 @@ public class SudokuGridView extends GridPane {
                     tf.setText(String.valueOf(value));
                     tf.setDisable(true);
                 }
+                tf.getStyleClass().remove("hint-cell");
             }
         }
     }
 
+    /**
+     * Clears the grid and disables all cells.
+     */
     public void clearAndDisableGrid() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
@@ -94,6 +114,10 @@ public class SudokuGridView extends GridPane {
         }
     }
 
+    /**
+     * Enables all cells in the grid and resets their styles.
+     * This method is typically used to allow user input after a puzzle has been cleared or reset.
+     */
     public void enableGrid() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
@@ -104,6 +128,10 @@ public class SudokuGridView extends GridPane {
         }
     }
 
+    /**
+     * Retrieves the current state of the Sudoku board from the grid view.
+     * @return A SudokuBoard object representing the current state of the grid.
+     */
     public SudokuBoard getCurrentBoard() {
         SudokuBoard board = new SudokuBoard();
         int[][] values = new int[9][9];
@@ -117,6 +145,11 @@ public class SudokuGridView extends GridPane {
         return board;
     }
 
+    /**
+     * Checks the solution of the Sudoku board against the provided model.
+     * Highlights incorrect cells and disables correct ones.
+     * @param sudokuBoard The SudokuBoard model to check against.
+     */
     public void checkSolution(SudokuBoard sudokuBoard) {
         boolean allCorrect = true;
         for (int row = 0; row < 9; row++) {
@@ -127,6 +160,7 @@ public class SudokuGridView extends GridPane {
                     cell.setStyle("-fx-background-color: #f8d7da;"); // Incorrect value
                     allCorrect = false;
                 } else {
+                    cell.setDisable(true); // Disable cell if correct
                     cell.setStyle("-fx-background-color: #d4edda;"); // Correct value
                 }
             }
@@ -141,6 +175,10 @@ public class SudokuGridView extends GridPane {
         }
     }
 
+    /**
+     * Reveals the solution of the Sudoku puzzle by updating the grid view.
+     * @param solution The SudokuBoard containing the solution to reveal.
+     */
     public void revealSolution(SudokuBoard solution) {
         if(solution == null){
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -152,4 +190,53 @@ public class SudokuGridView extends GridPane {
         }
         updateFromModel(solution);
     }
+
+    /**
+     * Displays a hint for the Sudoku puzzle.
+     * Highlights the cell and shows an alert with the hint details.
+     * @param hint The Hint object containing the hint information.
+     */
+    public void showHint(Hint hint) {
+        if (hint == null) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Sudoku Hint");
+            alert.setHeaderText(null);
+            alert.setContentText("No hints available at this time.");
+            alert.showAndWait();
+            return;
+        }
+
+        if (hint.type() == Hint.HintType.ALREADY_SOLVED) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Sudoku Hint");
+            alert.setHeaderText(null);
+            alert.setContentText("The Sudoku puzzle is already solved!");
+            alert.showAndWait();
+            return;
+        }
+
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                TextField cell = cells[row][col];
+                cell.getStyleClass().remove("hint-cell");
+            }
+        }
+
+        TextField cell = cells[hint.row()][hint.col()];
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Sudoku Hint");
+        alert.setHeaderText("HINT: " + hint.type().toString().replaceAll("_", " "));
+        alert.setContentText(
+                "Location: Row " + (hint.row() + 1) + ", Column " + (hint.col() + 1) +
+                        "\n\nExplanation: " + hint.explanation() +
+                        "\n\nWould you like to reveal its number?"
+        );
+        Optional<ButtonType> result = alert.showAndWait();
+        cell.getStyleClass().add("hint-cell");
+
+        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+            cell.setText(String.valueOf(hint.value()));
+        }
+    }
+
 }

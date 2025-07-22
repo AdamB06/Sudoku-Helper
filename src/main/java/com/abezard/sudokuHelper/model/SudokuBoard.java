@@ -7,6 +7,10 @@ public class SudokuBoard {
         this.board = new int[9][9];
     }
 
+    /**
+     * Constructor that creates a SudokuBoard from an existing board.
+     * @param fullBoard the SudokuBoard to copy from
+     */
     public SudokuBoard(SudokuBoard fullBoard) {
         this.board = new int[9][9];
         for (int i = 0; i < 9; i++) {
@@ -14,10 +18,10 @@ public class SudokuBoard {
         }
     }
 
-    public int[][] getBoard() {
-        return board;
-    }
-
+    /**
+     * Constructor that initializes the SudokuBoard with a given 2D array.
+     * @param board a 2D array representing the Sudoku board
+     */
     public void setBoard(int[][] board) {
         if (board.length == 9 && board[0].length == 9) {
             this.board = board;
@@ -32,17 +36,5 @@ public class SudokuBoard {
 
     public void setCell(int row, int col, int value) {
         board[row][col] = value;
-    }
-
-    public boolean isEmpty(int row, int col) {
-        return board[row][col] == 0;
-    }
-
-    public void reset() {
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                board[i][j] = 0;
-            }
-        }
     }
 }
