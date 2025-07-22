@@ -1,15 +1,14 @@
 # Sudoku Helper
 
-An intelligent Sudoku assistant that:
+A Sudoku helper tool that:
 - Generates puzzles of varying difficulty
 - Solves them step-by-step using human-style logic
 - Provides interactive hints
-- (Planned) Animates solving process
 
 ## Features
 - REST API with Spring Boot
 - Modular solving and hint engine
-- (Planned) JavaFX frontend or web UI
+- JavaFX GUI
 
 ## Setup
 ### Running the Application
@@ -27,8 +26,6 @@ This project uses JavaFX for the client UI and Spring Boot for the backend serve
 2. Open **Run > Edit Configurations...**.
 3. Select the run configuration for `SudokuHelperClient`.
 4. In **VM options**, add the following (replace with your JavaFX SDK path):
-
-
 
 ## Run Locally
 ```bash
