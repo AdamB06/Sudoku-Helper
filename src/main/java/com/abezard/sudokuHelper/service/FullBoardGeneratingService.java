@@ -75,7 +75,7 @@ public class FullBoardGeneratingService {
      * @param num The number to place in the cell.
      * @return true if the placement is valid, false otherwise.
      */
-    private boolean isValidPlacement(SudokuBoard board, int row, int col, int num) {
+    boolean isValidPlacement(SudokuBoard board, int row, int col, int num) {
         // Check row and column
         for (int i = 0; i < 9; i++) {
             if (board.getCell(row, i) == num || board.getCell(i, col) == num) {
