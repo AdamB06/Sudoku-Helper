@@ -8,6 +8,7 @@ import com.abezard.sudokuHelper.view.SudokuGridView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,11 @@ public class SudokuController implements Initializable {
     @FXML
     private GridPane sudokuGrid;
 
+    @FXML
+    private Button candidateModeButton;
+
+    private boolean candidateMode = false;
+
     /**
      * Initializes the SudokuController, sets up the sudoku grid.
      * @param location  The location used to resolve relative paths for the root object, or null if the location is not known.
@@ -32,15 +38,27 @@ public class SudokuController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // setup grid
         boardGenerator = new FullBoardGeneratingService();
         sudokuGridView = new SudokuGridView();
         sudokuGrid.getChildren().clear();
         sudokuGrid.add(sudokuGridView, 0, 0);
         GridPane.setHgrow(sudokuGridView, Priority.ALWAYS);
         GridPane.setVgrow(sudokuGridView, Priority.ALWAYS);
-
-        // Instead of loading a puzzle, clear and disable grid on startup
         sudokuGridView.clearAndDisableGrid();
+
+        // Wait for the scene to be ready and register key events
+        sudokuGrid.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.setOnKeyPressed(event -> {
+                    if ("SHIFT".equals(event.getCode().toString())) {
+                        candidateMode = !candidateMode;
+                        candidateModeButton.setText(candidateMode ? "Candidate Mode: ON" : "Candidate Mode: OFF");
+                        sudokuGridView.setCandidateMode(candidateMode);
+                    }
+                });
+            }
+        });
     }
 
 
@@ -112,6 +130,17 @@ public class SudokuController implements Initializable {
             hintGenerator = new SudokuHintService(sudokuGenerator.getSolution(), boardGenerator);
         }
         sudokuGridView.showHint(hintGenerator.computeHint(sudokuGridView.getCurrentBoard()));
+    }
+
+    /**
+     * Toggles candidate mode on or off.
+     * In candidate mode, users can enter candidates in cells without affecting the main value.
+     */
+    @FXML
+    public void onToggleCandidateMode() {
+        candidateMode = !candidateMode;
+        sudokuGridView.setCandidateMode(candidateMode);
+        candidateModeButton.setText(candidateMode ? "Disable Candidate Mode" : "Enable Candidate Mode");
     }
 
     /**

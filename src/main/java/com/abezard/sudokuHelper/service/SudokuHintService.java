@@ -41,8 +41,20 @@ public class SudokuHintService {
         if (hiddenSingleHint != null) {
             return hiddenSingleHint;
         }
-        // Add more advanced hint types here (e.g., naked pairs, pointing pairs, etc.)
-        return null;
+
+        // Naked Pair: Check for pairs of cells in rows, columns, and boxes that can only contain the same two candidates, and no others.
+        Hint nakedPairHint = findNakedPair(currentBoard);
+        if (nakedPairHint != null) {
+            return nakedPairHint;
+        }
+
+        // Hidden Pair: Check for pairs of candidates in rows, columns, and boxes that can only fit in two cells.
+        Hint hiddenPairHint = findHiddenPair(currentBoard);
+        if (hiddenPairHint != null) {
+            return hiddenPairHint;
+        }
+        // Pointing Pair: Check for candidates that can be eliminated from other cells in the same row or column of a box.
+        return findPointingPairHint(currentBoard);
     }
 
     /**
@@ -214,6 +226,21 @@ public class SudokuHintService {
                 }
             }
         }
+        return null;
+    }
+
+    private Hint findNakedPair(SudokuBoard currentBoard) {
+        //TODO: Implement the logic
+        return null;
+    }
+
+    private Hint findHiddenPair(SudokuBoard currentBoard) {
+        //TODO: Implement the logic
+        return null;
+    }
+
+    private Hint findPointingPairHint(SudokuBoard currentBoard) {
+        //TODO: Implement the logic
         return null;
     }
 }

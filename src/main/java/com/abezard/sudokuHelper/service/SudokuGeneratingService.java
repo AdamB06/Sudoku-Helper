@@ -1,6 +1,5 @@
 package com.abezard.sudokuHelper.service;
 
-import com.abezard.sudokuHelper.model.Hint;
 import com.abezard.sudokuHelper.model.SudokuBoard;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +26,7 @@ public class SudokuGeneratingService {
     /**
      * Generates a Sudoku puzzle based on the specified difficulty level.
      * @param difficulty The difficulty level of the puzzle, either "easy" or "hard".
-     * @return A SudokuBoard object representing the generated puzzle with a certain amount of removed values. Ensures uniqueness of the solution.
+     * @return A SudokuBoard object representing the generated puzzle with a certain number of removed values. Ensures the uniqueness of the solution.
      */
     public SudokuBoard generatePuzzle(String difficulty) {
         solution = generator.generateFullBoard();
