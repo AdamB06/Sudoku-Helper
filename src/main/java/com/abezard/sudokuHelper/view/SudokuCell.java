@@ -123,11 +123,18 @@ public class SudokuCell extends StackPane {
     }
 
     /**
+     * Getter for the candidates of this Sudoku cell.
+     * @return a Set of integers representing the candidates (1-9) for this cell.
+     */
+    public Set<Integer> getCandidates() {
+        return candidates;
+    }
+
+    /**
      * Adds a hint style to the Sudoku cell and its value field.
      */
     public void addHintStyle() {
         getStyleClass().add("hint-cell");
-        valueField.getStyleClass().add("hint-cell");
     }
 
     /**

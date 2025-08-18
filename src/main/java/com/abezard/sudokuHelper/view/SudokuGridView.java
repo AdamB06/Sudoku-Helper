@@ -1,13 +1,15 @@
 package com.abezard.sudokuHelper.view;
 
+import com.abezard.sudokuHelper.model.CandidatesHint;
 import com.abezard.sudokuHelper.model.Hint;
 import com.abezard.sudokuHelper.model.SudokuBoard;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.*;
 
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SudokuGridView extends GridPane {
 
@@ -134,7 +136,6 @@ public class SudokuGridView extends GridPane {
                 int checkValue = resultBoard.getCell(r, c);
                 if (checkValue == -1) {
                     cell.getStyleClass().add("incorrect-cell");
-                    cell.valueField().getStyleClass().add("incorrect-cell");
                     allCorrect = false;
                 } else {
                     cell.valueField().setDisable(true);
@@ -195,22 +196,204 @@ public class SudokuGridView extends GridPane {
 
         clearHintHighlights();
 
-        SudokuCell cell = cells[hint.row()][hint.col()];
-        cell.addHintStyle();
+        if(hint.type() == Hint.HintType.HIDDEN_SINGLE || hint.type() == Hint.HintType.NAKED_SINGLE) {
+            SudokuCell cell = cells[hint.row()][hint.col()];
+            cell.addHintStyle();
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Sudoku Hint");
-        alert.setHeaderText("HINT: " + hint.type().toString().replaceAll("_", " "));
-        alert.setContentText(
-                "Location: Row " + (hint.row() + 1) + ", Column " + (hint.col() + 1) +
-                        "\n\nExplanation: " + hint.explanation() +
-                        "\n\nWould you like to reveal its number?"
-        );
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Sudoku Hint");
+            alert.setHeaderText("HINT: " + hint.type().toString().replaceAll("_", " "));
+            alert.setContentText(
+                    "Location: Row " + (hint.row() + 1) + ", Column " + (hint.col() + 1) +
+                            "\n\nExplanation: " + hint.explanation()
+            );
+            alert.showAndWait();
             cell.setValue(hint.value(), false);
             cell.setCandidates(null);
+            return;
+        }
+
+        if(hint.type() == Hint.HintType.NAKED_PAIR) {
+            CandidatesHint h = (CandidatesHint) hint;
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.setTitle("Sudoku Hint");
+            alert.setHeaderText("HINT: " + hint.type().toString().replaceAll("_", " "));
+            if(h.getScope().equals("row")) {
+                alert.setContentText(
+                        "Row " + (h.getCellCoordinates()[0][0] + 1) + " has a naked pair of candidates: " +
+                                h.getCandidates()[0] + " and " + h.getCandidates()[1] +
+                                "\n\nExplanation: " + hint.explanation()
+                );
+                highlightRow(h.getCellCoordinates()[0][0]);
+                removeCandidatesFromRow(h.getCellCoordinates()[0][0], h.getCandidates());
+            } else if(h.getScope().equals("column")) {
+                alert.setContentText(
+                        "Column " + (h.getCellCoordinates()[0][1] + 1) + " has a naked pair of candidates: " +
+                                h.getCandidates()[0] + " and " + h.getCandidates()[1] +
+                                "\n\nExplanation: " + hint.explanation()
+                );
+                highlightColumn(h.getCellCoordinates()[0][1]);
+                removeCandidatesFromColumn(h.getCellCoordinates()[0][0], h.getCandidates());
+            } else {
+                alert.setContentText(
+                        "Box at Row " + (h.getCellCoordinates()[0][0] / 3 * 3 + 1) +
+                                ", Column " + (h.getCellCoordinates()[0][1] / 3 * 3 + 1) +
+                                " has a naked pair of candidates: " +
+                                h.getCandidates()[0] + " and " + h.getCandidates()[1] +
+                                "\n\nExplanation: " + hint.explanation()
+                );
+                highlightBox(h.getCellCoordinates()[0][0], h.getCellCoordinates()[0][1]);
+                removeCandidatesFromBox(h.getCellCoordinates()[0][0], h.getCellCoordinates()[0][1], h.getCandidates());
+            }
+            for(int[] cellCoords : h.getCellCoordinates()) {
+                int row = cellCoords[0];
+                int col = cellCoords[1];
+                cells[row][col].setCandidates(new HashSet<>(Arrays.asList(h.getCandidates()[0], h.getCandidates()[1])));
+            }
+            alert.showAndWait();
+        }
+
+        if(hint.type() == Hint.HintType.HIDDEN_PAIR) {
+            CandidatesHint h = (CandidatesHint) hint;
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.setTitle("Sudoku Hint");
+            alert.setHeaderText("HINT: " + hint.type().toString().replaceAll("_", " "));
+            if(h.getScope().equals("row")) {
+                alert.setContentText(
+                        "Row " + (h.getCellCoordinates()[0][0] + 1) + " has a hidden pair of candidates: " +
+                                h.getCandidates()[0] + " and " + h.getCandidates()[1] +
+                                "\n\nExplanation: " + hint.explanation()
+                );
+                highlightRow(h.getCellCoordinates()[0][0]);
+            } else if(h.getScope().equals("column")) {
+                alert.setContentText(
+                        "Column " + (h.getCellCoordinates()[0][1] + 1) + " has a hidden pair of candidates: " +
+                                h.getCandidates()[0] + " and " + h.getCandidates()[1] +
+                                "\n\nExplanation: " + hint.explanation()
+                );
+                highlightColumn(h.getCellCoordinates()[0][1]);
+            } else {
+                alert.setContentText(
+                        "Box at Row " + (h.getCellCoordinates()[0][0] / 3 * 3 + 1) +
+                                ", Column " + (h.getCellCoordinates()[0][1] / 3 * 3 + 1) +
+                                " has a hidden pair of candidates: " +
+                                h.getCandidates()[0] + " and " + h.getCandidates()[1] +
+                                "\n\nExplanation: " + hint.explanation()
+                );
+                highlightBox(h.getCellCoordinates()[0][0], h.getCellCoordinates()[0][1]);
+            }
+            for(int[] cellCoords : h.getCellCoordinates()) {
+                int row = cellCoords[0];
+                int col = cellCoords[1];
+                cells[row][col].setCandidates(new HashSet<>(Arrays.asList(h.getCandidates()[0], h.getCandidates()[1])));
+            }
+            alert.showAndWait();
+        }
+
+        if(hint.type() == Hint.HintType.POINTING_PAIR) {
+            CandidatesHint h = (CandidatesHint) hint;
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.setTitle("Sudoku Hint");
+            alert.setHeaderText("HINT: " + hint.type().toString().replaceAll("_", " "));
+            if(h.getScope().equals("row")) {
+                alert.setContentText(
+                        "Row " + (h.getCellCoordinates()[0][0] + 1) + " has a pointing pair/triple with candidate: " +
+                                h.getCandidates()[0]+ "\n\nExplanation: " + hint.explanation());
+                highlightRow(h.getCellCoordinates()[0][0]);
+                removeCandidatesFromRow(h.getCellCoordinates()[0][0], h.getCandidates());
+            } else if(h.getScope().equals("column")) {
+                alert.setContentText(
+                        "Column " + (h.getCellCoordinates()[0][1] + 1) + " has a pointing pair/triple with candidate: " +
+                                h.getCandidates()[0] + "\n\nExplanation: " + hint.explanation());
+                highlightColumn(h.getCellCoordinates()[0][1]);
+                removeCandidatesFromColumn(h.getCellCoordinates()[0][1], h.getCandidates());
+            }
+            for(int[] cellCoords : h.getCellCoordinates()) {
+                int row = cellCoords[0];
+                int col = cellCoords[1];
+                SudokuCell cell = cells[row][col];
+                Set<Integer> currentCandidates = cell.getCandidates();
+                if(currentCandidates != null) {
+                    currentCandidates.remove(h.getCandidates()[0]);
+                    cell.setCandidates(currentCandidates);
+                }
+            }
+            alert.showAndWait();
+        }
+    }
+
+    private void highlightBox(int row, int col) {
+        // Highlight the box containing the cell at (row, col)
+        int boxRowStart = (row / 3) * 3;
+        int boxColStart = (col / 3) * 3;
+        for (int r = boxRowStart; r < boxRowStart + 3; r++) {
+            for (int c = boxColStart; c < boxColStart + 3; c++) {
+                if(cells[r][c].getValueField().isDisabled()) continue; // Skip disabled cells
+                cells[r][c].getStyleClass().add("hint-cell");
+            }
+        }
+    }
+
+    private void highlightColumn(int col) {
+        // Highlight the column containing the cell at (row, col)
+        for (int r = 0; r < 9; r++) {
+            if(cells[r][col].getValueField().isDisabled()) continue; // Skip disabled cells
+            cells[r][col].getStyleClass().add("hint-cell");
+        }
+    }
+
+    private void highlightRow(int row) {
+        // Highlight the row containing the cell at (row, col)
+        for (int c = 0; c < 9; c++) {
+            cells[row][c].getStyleClass().add("hint-cell");
+        }
+    }
+
+    private void removeCandidatesFromRow(int row, int[] candidates) {
+        for(int col = 0; col < 9; col++) {
+            SudokuCell cell = cells[row][col];
+            if(cell.getValueField().isDisabled() || !cell.getValueField().getText().isEmpty()) continue; // Skip disabled cells
+            Set<Integer> currentCandidates = cell.getCandidates();
+            if(currentCandidates != null) {
+                for(int candidate : candidates) {
+                    currentCandidates.remove(candidate);
+                }
+                cell.setCandidates(currentCandidates);
+            }
+        }
+    }
+
+    private void removeCandidatesFromColumn(int col, int[] candidates) {
+        for(int row = 0; row < 9; row++) {
+            SudokuCell cell = cells[row][col];
+            if(cell.getValueField().isDisabled() || !cell.getValueField().getText().isEmpty()) continue; // Skip disabled cells
+            Set<Integer> currentCandidates = cell.getCandidates();
+            if(currentCandidates != null) {
+                for(int candidate : candidates) {
+                    currentCandidates.remove(candidate);
+                }
+                cell.setCandidates(currentCandidates);
+            }
+        }
+    }
+
+    private void removeCandidatesFromBox(int row, int col, int[] candidates) {
+        int boxRowStart = (row / 3) * 3;
+        int boxColStart = (col / 3) * 3;
+        for (int r = boxRowStart; r < boxRowStart + 3; r++) {
+            for (int c = boxColStart; c < boxColStart + 3; c++) {
+                SudokuCell cell = cells[r][c];
+                if (cell.getValueField().isDisabled() || !cell.getValueField().getText().isEmpty()) continue; // Skip disabled cells
+                Set<Integer> currentCandidates = cell.getCandidates();
+                if (currentCandidates != null) {
+                    currentCandidates.remove(candidates[0]);
+                    currentCandidates.remove(candidates[1]);
+                    cell.setCandidates(currentCandidates);
+                }
+            }
         }
     }
 
@@ -222,7 +405,6 @@ public class SudokuGridView extends GridPane {
         for (Node node : getChildren()) {
             if (node instanceof SudokuCell cell) {
                 cell.getStyleClass().remove("hint-cell");
-                cell.getValueField().getStyleClass().remove("hint-cell");
             }
         }
     }
@@ -247,9 +429,7 @@ public class SudokuGridView extends GridPane {
         for (Node node : getChildren()) {
             if (node instanceof SudokuCell cell) {
                 cell.getStyleClass().remove("hint-cell");
-                cell.getValueField().getStyleClass().remove("hint-cell");
                 cell.getStyleClass().remove("incorrect-cell");
-                cell.getValueField().getStyleClass().remove("incorrect-cell");
                 cell.getStyleClass().remove("correct-cell");
                 cell.getValueField().getStyleClass().remove("correct-cell");
             }
