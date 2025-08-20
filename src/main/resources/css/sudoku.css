@@ -1,16 +1,15 @@
+/* Outer Grid Styling */
 .sudoku-grid {
     -fx-border-color: black;
-    -fx-border-width: 5px; /* thick outside border */
+    -fx-border-width: 5px;
 }
 
-.text-field {
-    -fx-font-size: 20px;
-    -fx-border-color: lightgray;
+.inner-cell {
+    -fx-border-color: lightgrey;
     -fx-border-width: 1px;
-    -fx-background-color: white;
-    -fx-alignment: center;
 }
 
+/* Inner Grid Styling */
 .top-row {
     -fx-border-width: 1px 1px 2px 1px;
     -fx-border-color: lightgrey lightgrey darkgrey lightgrey;
@@ -61,12 +60,53 @@
     -fx-background-color: rgba(255, 213, 128, 0.4);;
 }
 
-.text-field:disabled {
-    -fx-opacity: 1;
-    -fx-background-color: #e0e7ff;
-    -fx-text-fill: black;
+/* Custom sudoku cell styling for candidates and values */
+.sudoku-cell {
+    -fx-background-color: white;
+}
+
+.value-field {
+    -fx-font-size: 20px;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-alignment: center;
+    -fx-text-fill: #000;
 }
 
 .hint-cell {
     -fx-background-color: #fff3cd;
+}
+
+.candidate {
+    -fx-font-size: 10px;
+    -fx-text-fill: #333;
+    -fx-alignment: center;
+    -fx-pref-width: 16px;
+    -fx-pref-height: 16px;
+}
+
+.correct-cell{
+    -fx-background-color: #c8f7c5;
+}
+
+.incorrect-cell {
+    -fx-background-color: #f8d7da;
+}
+
+.value-field:disabled {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #000;
+    -fx-opacity: 0.85;
+}
+
+.disabled-cell {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #000;
+    -fx-opacity: 0.85;
+}
+
+.value-field.correct-cell:disabled {
+    -fx-background-color: #c8f7c5;
+    -fx-text-fill: #000;
+    -fx-opacity: 0.85;
 }
