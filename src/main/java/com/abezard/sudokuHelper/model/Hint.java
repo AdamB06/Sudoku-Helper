@@ -6,6 +6,8 @@ public class Hint{
         INCORRECT_INPUT, // User has a mistake in their inputs
         NAKED_SINGLE, // Only candidate in a cell (basic solving step)
         HIDDEN_SINGLE, // Only place a digit can go in a row/col/box
+        ALL_CANDIDATES, // Show all valid candidates for the grid
+        LAST_CANDIDATE, // The last candidate for a cell
         NAKED_PAIR, // Two cells in a unit share the same two candidates - Since both cells can only have the same two digits, we can eliminate those candidates from other cells in that unit
         HIDDEN_PAIR, // Two digits only appear in the same two cells in a unit - we can eliminate those candidates from other cells in that unit
         POINTING_PAIR, // Candidate confined to a row/col inside a box — eliminate from rest of that row/col;

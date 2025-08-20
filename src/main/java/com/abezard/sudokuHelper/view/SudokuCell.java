@@ -12,7 +12,7 @@ public class SudokuCell extends StackPane {
     private final TextField valueField = new TextField();
     private final GridPane candidatesGrid = new GridPane();
     private boolean candidateMode = false;
-    private final Set<Integer> candidates = new java.util.HashSet<>();
+    private Set<Integer> candidates = new java.util.HashSet<>();
 
     /**
      * Constructor for the custom JavaFX object SudokuCell. Allows for easy switching
@@ -113,13 +113,8 @@ public class SudokuCell extends StackPane {
      * @param cands a Set of integers representing the candidates (1-9) for this cell.
      */
     public void setCandidates(Set<Integer> cands) {
-        for (int i = 0; i < 9; i++) {
-            Label label = (Label) candidatesGrid.getChildren().get(i);
-            int digit = i + 1;
-            label.setText(cands != null && cands.contains(digit) ? String.valueOf(digit) : "");
-        }
-        // only show candidates when no value set
-        candidatesGrid.setVisible(valueField.getText().isEmpty());
+        candidates = cands;
+        updateCandidateLabels();
     }
 
     /**
@@ -156,7 +151,7 @@ public class SudokuCell extends StackPane {
             int digit = i + 1;
             label.setText(candidates.contains(digit) ? String.valueOf(digit) : "");
         }
-        candidatesGrid.setVisible(candidateMode && valueField.getText().isEmpty());
+        candidatesGrid.setVisible(valueField.getText().isEmpty());
     }
 
     /**

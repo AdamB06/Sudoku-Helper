@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Set;
+
 @Component
 public class SudokuController implements Initializable {
 
@@ -78,7 +80,7 @@ public class SudokuController implements Initializable {
     public void onNewEasyClicked() {
         sudokuGenerator = new SudokuGeneratingService(boardGenerator);
         SudokuBoard newBoard = sudokuGenerator.generatePuzzle("easy");
-        hintGenerator = new SudokuHintService(sudokuGenerator.getSolution(), boardGenerator);
+        hintGenerator = new SudokuHintService(sudokuGenerator.getSolution(), boardGenerator, this);
         loadNewPuzzle(newBoard);
     }
 
@@ -89,7 +91,7 @@ public class SudokuController implements Initializable {
     public void onNewHardClicked() {
         sudokuGenerator = new SudokuGeneratingService(boardGenerator);
         SudokuBoard newBoard = sudokuGenerator.generatePuzzle("hard");
-        hintGenerator = new SudokuHintService(sudokuGenerator.getSolution(), boardGenerator);
+        hintGenerator = new SudokuHintService(sudokuGenerator.getSolution(), boardGenerator, this);
         loadNewPuzzle(newBoard);
     }
 
@@ -126,9 +128,6 @@ public class SudokuController implements Initializable {
             showInfoDialog("Please start a puzzle before requesting a hint.");
             return;
         }
-        if (!hintGenerator.getSolution().equals(sudokuGenerator.getSolution())) {
-            hintGenerator = new SudokuHintService(sudokuGenerator.getSolution(), boardGenerator);
-        }
         sudokuGridView.showHint(hintGenerator.computeHint(sudokuGridView.getCurrentBoard()));
     }
 
@@ -153,5 +152,9 @@ public class SudokuController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public Set<Integer>[][] getCandidates() {
+        return sudokuGridView.getAllCandidates();
     }
 }

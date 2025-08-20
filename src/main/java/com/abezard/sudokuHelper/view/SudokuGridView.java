@@ -87,7 +87,7 @@ public class SudokuGridView extends GridPane {
             for (int c = 0; c < 9; c++) {
                 SudokuCell cell = cells[r][c];
                 cell.setValue(0, true);
-                cell.setCandidates(null);
+                cell.setCandidates(new HashSet<>());
                 cell.getStyleClass().add("disabled-cell");
             }
         }
@@ -180,8 +180,19 @@ public class SudokuGridView extends GridPane {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Sudoku Hint");
             alert.setHeaderText(null);
-            alert.setContentText("No hints available at this time.");
+            alert.setContentText("More advanced solving techniques are required to solve this puzzle.");
             alert.showAndWait();
+            return;
+        }
+
+        if(hint.type() == Hint.HintType.INCORRECT_INPUT){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Sudoku Hint");
+            alert.setHeaderText(null);
+            alert.setContentText("You have an incorrect input in the grid. The highlighted cell is incorrect.");
+            alert.showAndWait();
+            SudokuCell cell = cells[hint.row()][hint.col()];
+            cell.getStyleClass().add("hint-cell");
             return;
         }
 
@@ -209,7 +220,24 @@ public class SudokuGridView extends GridPane {
             );
             alert.showAndWait();
             cell.setValue(hint.value(), false);
-            cell.setCandidates(null);
+            cell.setCandidates(new HashSet<>());
+            return;
+        }
+
+        if(hint.type() == Hint.HintType.LAST_CANDIDATE) {
+            SudokuCell cell = cells[hint.row()][hint.col()];
+            cell.addHintStyle();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Sudoku Hint");
+            alert.setHeaderText("HINT: " + hint.type().toString().replaceAll("_", " "));
+            alert.setContentText(
+                    "Location: Row " + (hint.row() + 1) + ", Column " + (hint.col() + 1) +
+                            "\n\nExplanation: " + hint.explanation()
+            );
+            alert.showAndWait();
+            cell.setValue(hint.value(), false);
+            cell.setCandidates(new HashSet<>());
             return;
         }
 
@@ -234,7 +262,7 @@ public class SudokuGridView extends GridPane {
                                 "\n\nExplanation: " + hint.explanation()
                 );
                 highlightColumn(h.getCellCoordinates()[0][1]);
-                removeCandidatesFromColumn(h.getCellCoordinates()[0][0], h.getCandidates());
+                removeCandidatesFromColumn(h.getCellCoordinates()[0][1], h.getCandidates());
             } else {
                 alert.setContentText(
                         "Box at Row " + (h.getCellCoordinates()[0][0] / 3 * 3 + 1) +
@@ -311,14 +339,30 @@ public class SudokuGridView extends GridPane {
                 highlightColumn(h.getCellCoordinates()[0][1]);
                 removeCandidatesFromColumn(h.getCellCoordinates()[0][1], h.getCandidates());
             }
+            // Add the candidates back to the cells in the box they were confined to
             for(int[] cellCoords : h.getCellCoordinates()) {
                 int row = cellCoords[0];
                 int col = cellCoords[1];
-                SudokuCell cell = cells[row][col];
-                Set<Integer> currentCandidates = cell.getCandidates();
-                if(currentCandidates != null) {
-                    currentCandidates.remove(h.getCandidates()[0]);
-                    cell.setCandidates(currentCandidates);
+                HashSet<Integer> candidatesSet = new HashSet<>(cells[row][col].getCandidates());
+                candidatesSet.add(h.getCandidates()[0]);
+                cells[row][col].setCandidates(candidatesSet);
+            }
+            alert.showAndWait();
+        }
+
+        if(hint.type() == Hint.HintType.ALL_CANDIDATES) {
+            CandidatesHint h = (CandidatesHint) hint;
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.setTitle("Sudoku Hint");
+            alert.setHeaderText("HINT: " + hint.type().toString().replaceAll("_", " "));
+            alert.setContentText(h.explanation());
+            Set<Integer>[][] allCandidates = h.getMultipleCandidates();
+            for (int i = 0; i < allCandidates.length; i++) {
+                for (int j = 0; j < allCandidates[i].length; j++) {
+                    if (allCandidates[i][j] != null) {
+                        cells[i][j].setCandidates(new HashSet<>(allCandidates[i][j]));
+                    }
                 }
             }
             alert.showAndWait();
@@ -355,28 +399,24 @@ public class SudokuGridView extends GridPane {
     private void removeCandidatesFromRow(int row, int[] candidates) {
         for(int col = 0; col < 9; col++) {
             SudokuCell cell = cells[row][col];
-            if(cell.getValueField().isDisabled() || !cell.getValueField().getText().isEmpty()) continue; // Skip disabled cells
-            Set<Integer> currentCandidates = cell.getCandidates();
-            if(currentCandidates != null) {
-                for(int candidate : candidates) {
-                    currentCandidates.remove(candidate);
-                }
-                cell.setCandidates(currentCandidates);
+            if(cell.getValueField().isDisabled() || cell.getValue() != 0) continue; // Skip disabled cells
+            Set<Integer> currentCandidates = new HashSet<>(cell.getCandidates());
+            for(int candidate : candidates) {
+                currentCandidates.remove(candidate);
             }
+            cell.setCandidates(currentCandidates);
         }
     }
 
     private void removeCandidatesFromColumn(int col, int[] candidates) {
         for(int row = 0; row < 9; row++) {
             SudokuCell cell = cells[row][col];
-            if(cell.getValueField().isDisabled() || !cell.getValueField().getText().isEmpty()) continue; // Skip disabled cells
-            Set<Integer> currentCandidates = cell.getCandidates();
-            if(currentCandidates != null) {
-                for(int candidate : candidates) {
-                    currentCandidates.remove(candidate);
-                }
-                cell.setCandidates(currentCandidates);
+            if(cell.getValueField().isDisabled() || cell.getValue() != 0) continue; // Skip disabled cells
+            Set<Integer> currentCandidates = new HashSet<>(cell.getCandidates());
+            for(int candidate : candidates) {
+                currentCandidates.remove(candidate);
             }
+            cell.setCandidates(currentCandidates);
         }
     }
 
@@ -386,13 +426,12 @@ public class SudokuGridView extends GridPane {
         for (int r = boxRowStart; r < boxRowStart + 3; r++) {
             for (int c = boxColStart; c < boxColStart + 3; c++) {
                 SudokuCell cell = cells[r][c];
-                if (cell.getValueField().isDisabled() || !cell.getValueField().getText().isEmpty()) continue; // Skip disabled cells
-                Set<Integer> currentCandidates = cell.getCandidates();
-                if (currentCandidates != null) {
-                    currentCandidates.remove(candidates[0]);
-                    currentCandidates.remove(candidates[1]);
-                    cell.setCandidates(currentCandidates);
+                if (cell.getValueField().isDisabled() || cell.getValue() != 0) continue; // Skip disabled cells
+                Set<Integer> currentCandidates = new HashSet<>(cell.getCandidates());
+                for(int candidate : candidates) {
+                    currentCandidates.remove(candidate);
                 }
+                cell.setCandidates(currentCandidates);
             }
         }
     }
@@ -434,5 +473,16 @@ public class SudokuGridView extends GridPane {
                 cell.getValueField().getStyleClass().remove("correct-cell");
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Set<Integer>[][] getAllCandidates(){
+        Set<Integer>[][] candidates = new HashSet[9][9];
+        for (int r = 0; r < 9; r++) {
+            for (int c = 0; c < 9; c++) {
+                candidates[r][c] = cells[r][c].getCandidates();
+            }
+        }
+        return candidates;
     }
 }
