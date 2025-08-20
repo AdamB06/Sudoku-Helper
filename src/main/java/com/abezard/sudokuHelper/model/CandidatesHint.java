@@ -33,4 +33,21 @@ public class CandidatesHint extends Hint {
     public Set<Integer>[][] getMultipleCandidates() {
         return  multipleCandidates;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CandidatesHint that)) return false;
+        if (!super.equals(o)) return false;
+
+        if (cells.length != that.cells.length || candidates.length != that.candidates.length) return false;
+
+        for (int i = 0; i < cells.length; i++) {
+            if (cells[i][0] != that.cells[i][0] || cells[i][1] != that.cells[i][1]) return false;
+        }
+        for (int i = 0; i < candidates.length; i++) {
+            if (candidates[i] != that.candidates[i]) return false;
+        }
+        return scope.equals(that.scope);
+    }
 }
