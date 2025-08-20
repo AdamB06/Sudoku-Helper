@@ -1,19 +1,26 @@
 # Sudoku Helper
 
 A Sudoku helper tool that:
+
 - Generates puzzles of varying difficulty
 - Solves them step-by-step using human-style logic
 - Provides interactive hints
+- Features a modular solving and hint engine
+- Includes a JavaFX GUI for an intuitive desktop experience
 
 ## Features
-- REST API with Spring Boot
-- Modular solving and hint engine
-- JavaFX GUI
+
+- Modular solving and hint engine 
+  - Built in a way that allows for easy extension of hint strategies, so that the hint engine can solve more complex puzzles. (Currently able to solve roughly 75% of the puzzles generated from difficult level)
+- The hint engine provides step-by-step hints with brief explanations to justify each step
+- JavaFX GUI for playing, solving, and learning Sudoku
+- Difficulty levels: generate either easy or difficult sudoku puzzles
 
 ## Setup
+
 ### Running the Application
 
-This project uses JavaFX for the client UI and Spring Boot for the backend server.
+This project uses JavaFX for the client UI.
 
 ### Prerequisites
 
@@ -26,7 +33,8 @@ This project uses JavaFX for the client UI and Spring Boot for the backend serve
 2. Open **Run > Edit Configurations...**.
 3. Select the run configuration for `SudokuHelperClient`.
 4. In **VM options**, add the following (replace with your JavaFX SDK path):
+--module-path /path/to/javafx-sdk-23.0.1/lib --add-modules javafx.controls,javafx.fxml
 
-## Run Locally
-```bash
-./mvnw spring-boot:run
+### Run Locally
+
+To launch the JavaFX client, use your IDE or run the appropriate main class with the JavaFX module path. Or:

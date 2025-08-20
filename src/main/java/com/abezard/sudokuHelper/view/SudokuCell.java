@@ -21,7 +21,16 @@ public class SudokuCell extends StackPane {
     public SudokuCell() {
         getStyleClass().add("sudoku-cell");
         setPrefSize(50, 50);
+        setupValueField();
+        setupCandidatesGrid();
+    }
 
+    /**
+     * Initializes the value field with specific styles and key event handling.
+     * In candidate mode, it allows toggling candidates by pressing number keys.
+     * In regular mode, it allows entering a single digit (1-9) and clears the field on repeated entry.
+     */
+    private void setupValueField() {
         valueField.getStyleClass().add("value-field");
         valueField.setAlignment(Pos.CENTER);
         valueField.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -50,8 +59,13 @@ public class SudokuCell extends StackPane {
                 e.consume();
             }
         });
+    }
 
-        // Candidates grid setup
+    /**
+     * Sets up the candidates grid, which displays candidate numbers (1-9) for the Sudoku cell.
+     * Each candidate is represented by a Label in a 3x3 GridPane layout.
+     */
+    private void setupCandidatesGrid() {
         candidatesGrid.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         candidatesGrid.setAlignment(Pos.CENTER);
         ColumnConstraints cc = new ColumnConstraints();

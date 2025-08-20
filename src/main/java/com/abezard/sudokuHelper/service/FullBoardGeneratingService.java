@@ -1,14 +1,14 @@
 package com.abezard.sudokuHelper.service;
 
 import com.abezard.sudokuHelper.model.SudokuBoard;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-@Component
+@Service
 public class FullBoardGeneratingService {
 
     private final Random random = new Random();
@@ -75,7 +75,7 @@ public class FullBoardGeneratingService {
      * @param num The number to place in the cell.
      * @return true if the placement is valid, false otherwise.
      */
-    boolean isValidPlacement(SudokuBoard board, int row, int col, int num) {
+    public boolean isValidPlacement(SudokuBoard board, int row, int col, int num) {
         // Check row and column
         for (int i = 0; i < 9; i++) {
             if (board.getCell(row, i) == num || board.getCell(i, col) == num) {

@@ -34,6 +34,11 @@ public class Hint{
         this.type = type;
     }
 
+    /**
+     * Getters for the properties of the hint.
+     * These methods allow access to the row, column, value, explanation, and type of
+     * @return the respective property
+     */
     public int row() {
         return row;
     }
@@ -48,5 +53,25 @@ public class Hint{
     }
     public HintType type() {
         return type;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Hint hint)) return false;
+        return row == hint.row &&
+                col == hint.col &&
+                value == hint.value &&
+                type == hint.type &&
+                explanation.equals(hint.explanation);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = row;
+        result = 31 * result + col;
+        result = 31 * result + value;
+        result = 31 * result + explanation.hashCode();
+        result = 31 * result + type.hashCode();
+        return result;
     }
 }
