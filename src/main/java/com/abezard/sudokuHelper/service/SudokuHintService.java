@@ -33,6 +33,7 @@ public class SudokuHintService {
     public Hint computeHint(SudokuBoard currentBoard) {
         Hint mistakeHint = findMistakes(currentBoard);
         if(mistakeHint != null) {
+            candidatesGiven = false; // since a mistake was found, recomputing candidates could help
             return mistakeHint;
         }
         Hint alreadySolvedHint = isSolved(currentBoard);
@@ -76,14 +77,6 @@ public class SudokuHintService {
         }
         // Pointing Pair: Check for candidates that can be eliminated from other cells in the same row or column of a box.
         return findPointingPairHint(currentBoard);
-    }
-
-    /**
-     * Getter for the solution SudokuBoard.
-     * @return the solution SudokuBoard
-     */
-    public SudokuBoard getSolution() {
-        return solution;
     }
 
     /**
@@ -514,8 +507,10 @@ public class SudokuHintService {
                                         new int[]{digit}, null,
                                         "row",
                                         "Pointing pair: digit " + digit + " in row " + (row+1) +
-                                                " confined to box (row: " + (3*boxRow+1) + ", col: " + (3*boxCol+1) + "). This means this digit can only appear in this row of this box, so we can eliminate it from other cells outside this box in this row."
-                                );                            }
+                                                " confined to box (row: " + (3*boxRow+1) + ", col: " + (3*boxCol+1)
+                                                + "). This means this digit can only appear in this row of this box, so we can eliminate it from other cells outside this box in this row."
+                                );
+                            }
                         }
                     }
 
@@ -537,7 +532,8 @@ public class SudokuHintService {
                                         cells, new int[]{digit}, null,
                                         "column",
                                         "Pointing pair: digit " + digit + " in column " + (col+1) +
-                                                " confined to box (row: " + (3*boxRow+1) + ", col: " + (3*boxCol+1) + "). This means this digit can only appear in this column of this box, so we can eliminate it from other cells outside this box in this column."
+                                                " confined to box (row: " + (3*boxRow+1) + ", col: " + (3*boxCol+1)
+                                                + "). This means this digit can only appear in this column of this box, so we can eliminate it from other cells outside this box in this column."
                                 );
                             }
                         }
@@ -546,9 +542,14 @@ public class SudokuHintService {
             }
         }
 
-        return null; // No pointing pair found
+        return null;
     }
 
+    /**
+     * Checks if there is only one candidate left in any empty cell of the current Sudoku board.
+     * @param currentBoard the current state of the Sudoku board
+     * @return a Hint indicating the last candidate found, or null if no such candidate exists
+     */
     private Hint checkLastCandidate(SudokuBoard currentBoard) {
         // Check if there is only one candidate left in the board
         Set<Integer>[][] candidates = controller.getCandidates();

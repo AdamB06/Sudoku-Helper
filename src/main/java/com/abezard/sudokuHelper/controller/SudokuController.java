@@ -19,10 +19,9 @@ import java.util.Set;
 @Component
 public class SudokuController implements Initializable {
 
-    private FullBoardGeneratingService boardGenerator;
-    private SudokuGeneratingService sudokuGenerator;
-    private SudokuHintService hintGenerator;
-
+    private FullBoardGeneratingService boardService;
+    private SudokuGeneratingService sudokuService;
+    private SudokuHintService hintService;
     private SudokuGridView sudokuGridView;
 
     @FXML
@@ -41,26 +40,13 @@ public class SudokuController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // setup grid
-        boardGenerator = new FullBoardGeneratingService();
+        boardService = new FullBoardGeneratingService();
         sudokuGridView = new SudokuGridView();
         sudokuGrid.getChildren().clear();
         sudokuGrid.add(sudokuGridView, 0, 0);
         GridPane.setHgrow(sudokuGridView, Priority.ALWAYS);
         GridPane.setVgrow(sudokuGridView, Priority.ALWAYS);
         sudokuGridView.clearAndDisableGrid();
-
-        // Wait for the scene to be ready and register key events
-        sudokuGrid.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                newScene.setOnKeyPressed(event -> {
-                    if ("SHIFT".equals(event.getCode().toString())) {
-                        candidateMode = !candidateMode;
-                        candidateModeButton.setText(candidateMode ? "Candidate Mode: ON" : "Candidate Mode: OFF");
-                        sudokuGridView.setCandidateMode(candidateMode);
-                    }
-                });
-            }
-        });
     }
 
 
@@ -78,9 +64,9 @@ public class SudokuController implements Initializable {
      */
     @FXML
     public void onNewEasyClicked() {
-        sudokuGenerator = new SudokuGeneratingService(boardGenerator);
-        SudokuBoard newBoard = sudokuGenerator.generatePuzzle("easy");
-        hintGenerator = new SudokuHintService(sudokuGenerator.getSolution(), boardGenerator, this);
+        sudokuService = new SudokuGeneratingService(boardService);
+        SudokuBoard newBoard = sudokuService.generatePuzzle(SudokuGeneratingService.Difficulty.EASY);
+        hintService = new SudokuHintService(sudokuService.getSolution(), boardService, this);
         loadNewPuzzle(newBoard);
     }
 
@@ -89,9 +75,9 @@ public class SudokuController implements Initializable {
      */
     @FXML
     public void onNewHardClicked() {
-        sudokuGenerator = new SudokuGeneratingService(boardGenerator);
-        SudokuBoard newBoard = sudokuGenerator.generatePuzzle("hard");
-        hintGenerator = new SudokuHintService(sudokuGenerator.getSolution(), boardGenerator, this);
+        sudokuService = new SudokuGeneratingService(boardService);
+        SudokuBoard newBoard = sudokuService.generatePuzzle(SudokuGeneratingService.Difficulty.HARD);
+        hintService = new SudokuHintService(sudokuService.getSolution(), boardService, this);
         loadNewPuzzle(newBoard);
     }
 
@@ -100,11 +86,11 @@ public class SudokuController implements Initializable {
      */
     @FXML
     public void onSubmitClicked() {
-        if (sudokuGenerator == null) {
+        if (sudokuService == null) {
             showInfoDialog("Please start a puzzle before submitting.");
             return;
         }
-        sudokuGridView.checkSolution(sudokuGenerator.checkSolution(sudokuGridView.getCurrentBoard()));
+        sudokuGridView.checkSolution(sudokuService.checkSolution(sudokuGridView.getCurrentBoard()));
     }
 
     /**
@@ -112,11 +98,11 @@ public class SudokuController implements Initializable {
      */
     @FXML
     public void onRevealSolution() {
-        if (sudokuGenerator == null) {
+        if (sudokuService == null) {
             showInfoDialog("Please start a puzzle before revealing the solution.");
             return;
         }
-        sudokuGridView.revealSolution(sudokuGenerator.getSolution());
+        sudokuGridView.revealSolution(sudokuService.getSolution());
     }
 
     /**
@@ -124,11 +110,11 @@ public class SudokuController implements Initializable {
      */
     @FXML
     public void onGetHint() {
-        if (hintGenerator == null) {
+        if (hintService == null) {
             showInfoDialog("Please start a puzzle before requesting a hint.");
             return;
         }
-        sudokuGridView.showHint(hintGenerator.computeHint(sudokuGridView.getCurrentBoard()));
+        sudokuGridView.showHint(hintService.computeHint(sudokuGridView.getCurrentBoard()));
     }
 
     /**
@@ -154,6 +140,10 @@ public class SudokuController implements Initializable {
         alert.showAndWait();
     }
 
+    /**
+     * Retrieves the current candidates from the Sudoku grid view.
+     * @return A 2D array of sets containing candidates for each cell in the Sudoku grid.
+     */
     public Set<Integer>[][] getCandidates() {
         return sudokuGridView.getAllCandidates();
     }

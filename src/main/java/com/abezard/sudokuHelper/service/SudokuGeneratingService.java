@@ -14,6 +14,29 @@ public class SudokuGeneratingService {
     private final FullBoardGeneratingService generator;
     private final Random random = new Random();
     private SudokuBoard solution;
+    public enum Difficulty {
+        EASY(28),
+        HARD(18);
+
+        private final int clueCount;
+
+        /**
+         * Constructor for Difficulty enum.
+         * @param clueCount The number of clues to be left in the generated Sudoku puzzle based on difficulty.
+         * (28 for EASY, 18 for HARD)
+         */
+        Difficulty(int clueCount) {
+            this.clueCount = clueCount;
+        }
+
+        /**
+         * Gets the number of clues for the difficulty level.
+         * @return The number of clues to be left in the generated Sudoku puzzle.
+         */
+        public int getClueCount() {
+            return clueCount;
+        }
+    }
 
     /**
      * Constructor for SudokuGeneratingService.
@@ -26,9 +49,10 @@ public class SudokuGeneratingService {
     /**
      * Generates a Sudoku puzzle based on the specified difficulty level.
      * @param difficulty The difficulty level of the puzzle, either "easy" or "hard".
-     * @return A SudokuBoard object representing the generated puzzle with a certain number of removed values. Ensures the uniqueness of the solution.
+     * @return A SudokuBoard object representing the generated puzzle with a certain number of removed values.
+     * Ensures the uniqueness of the solution.
      */
-    public SudokuBoard generatePuzzle(String difficulty) {
+    public SudokuBoard generatePuzzle(Difficulty difficulty) {
         solution = generator.generateFullBoard();
         SudokuBoard puzzle = new SudokuBoard(solution);
 
@@ -41,16 +65,13 @@ public class SudokuGeneratingService {
         }
 
         Collections.shuffle(positions, random); // Shuffle all the coordinates to randomly remove cells
-        int clues = difficulty.equals("easy") ? 28 : 18; // Number of clues based on difficulty
+        int clues = difficulty.getClueCount(); // Number of clues based on difficulty
         int removed = 0;
-
         for (int[] pos : positions) {
             if (81 - removed <= clues) break; // stop if we removed enough cells
-
             int row = pos[0], col = pos[1];
             int backup = puzzle.getCell(row, col);
             puzzle.setCell(row, col, 0);
-
             if (countSolutions(puzzle) != 1) {
                 puzzle.setCell(row, col, backup); // Restore if not uniquely solvable
             } else {

@@ -34,6 +34,11 @@ public class Hint{
         this.type = type;
     }
 
+    /**
+     * Getters for the properties of the hint.
+     * These methods allow access to the row, column, value, explanation, and type of
+     * @return the respective property
+     */
     public int row() {
         return row;
     }

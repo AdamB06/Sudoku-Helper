@@ -1,14 +1,14 @@
 package com.abezard.sudokuHelper.service;
 
 import com.abezard.sudokuHelper.model.SudokuBoard;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-@Component
+@Service
 public class FullBoardGeneratingService {
 
     private final Random random = new Random();

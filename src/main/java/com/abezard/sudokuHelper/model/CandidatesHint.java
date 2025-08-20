@@ -17,18 +17,19 @@ public class CandidatesHint extends Hint {
         this.multipleCandidates = multipleCandidates;
     }
 
+    /**
+     * Getter methods to access the properties of the CandidatesHint.
+     * @return the respective properties of the CandidatesHint.
+     */
     public int[][] getCellCoordinates() {
         return cells;
     }
-
     public int[] getCandidates() {
         return candidates;
     }
-
     public String getScope() {
         return scope;
     }
-
     public Set<Integer>[][] getMultipleCandidates() {
         return  multipleCandidates;
     }
